@@ -1698,6 +1698,12 @@ async function toggleRecording() {
       recognition.onerror = function(event) {
         console.error('Speech recognition error:', event.error);
       };
+      recognition.onend = function() {
+        // Mobile browsers stop recognition after silence, even with continuous:true
+        if (STATE.isRecording) {
+          try { recognition.start(); } catch(e) {}
+        }
+      };
       STATE.speechRecognition = recognition;
       recognition.start();
     }
