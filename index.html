@@ -1291,6 +1291,8 @@ const STATE = {
   timerInterval: null,
   mediaRecorder: null,
   audioChunks: [],
+  speechRecognition: null,
+  transcript: '',
   mode: 'initial', // 'initial' | 'followUp' | 'similar'
   conversationHistory: [], // for follow-up context
   currentReport: null
@@ -1656,8 +1658,11 @@ async function toggleRecording() {
 
     STATE.mediaRecorder.onstop = () => {
       stream.getTracks().forEach(t => t.stop());
-      // Simulate speech recognition result
-      STATE.answerText = mockSpeechToText(STATE.audioChunks);
+      if (STATE.speechRecognition) {
+        STATE.speechRecognition.stop();
+      }
+      // Use real speech recognition result, or fallback to mock
+      STATE.answerText = STATE.transcript || mockSpeechToText(STATE.audioChunks);
       document.getElementById('text-answer').value = STATE.answerText;
       document.getElementById('char-count').textContent = STATE.answerText.length;
       document.getElementById('btn-submit').disabled = !STATE.answerText.trim();
@@ -1669,6 +1674,33 @@ async function toggleRecording() {
       showToast('录音过程中出错，请重试或使用文字输入');
       track('recording_error', { error: 'MediaRecorder error' });
     };
+
+    // Initialize speech recognition (browser-native, free)
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    STATE.transcript = '';
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.lang = 'zh-CN';
+      recognition.interimResults = true;
+      recognition.continuous = true;
+      recognition.onresult = function(event) {
+        var interim = '';
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            STATE.transcript += event.results[i][0].transcript;
+          } else {
+            interim += event.results[i][0].transcript;
+          }
+        }
+        document.getElementById('text-answer').value = STATE.transcript + interim;
+        document.getElementById('char-count').textContent = (STATE.transcript + interim).length;
+      };
+      recognition.onerror = function(event) {
+        console.error('Speech recognition error:', event.error);
+      };
+      STATE.speechRecognition = recognition;
+      recognition.start();
+    }
 
     STATE.mediaRecorder.start();
     STATE.isRecording = true;
@@ -1714,6 +1746,10 @@ async function toggleRecording() {
 function stopRecording() {
   STATE.isRecording = false;
   if (STATE.timerInterval) clearInterval(STATE.timerInterval);
+  if (STATE.speechRecognition) {
+    try { STATE.speechRecognition.stop(); } catch(e) {}
+    STATE.speechRecognition = null;
+  }
   if (STATE.mediaRecorder && STATE.mediaRecorder.state === 'recording') {
     STATE.mediaRecorder.stop();
   }
@@ -1757,20 +1793,19 @@ function submitAnswer() {
 
 // ===== Screen 3: Loading =====
 function simulateAnalysis() {
-  const steps = [
+  var steps = [
     document.getElementById('load-step1'),
     document.getElementById('load-step2'),
     document.getElementById('load-step3'),
     document.getElementById('load-step4')
   ];
 
-  // Reset all steps
-  steps.forEach(s => { s.classList.remove('done', 'current'); });
+  steps.forEach(function(s) { s.classList.remove('done', 'current'); });
   steps[0].classList.add('current');
 
-  const timings = [800, 1600, 2400, 3200];
-  timings.forEach((delay, i) => {
-    setTimeout(() => {
+  var timings = [800, 1600, 2400, 3200];
+  timings.forEach(function(delay, i) {
+    setTimeout(function() {
       if (i > 0) {
         steps[i - 1].classList.remove('current');
         steps[i - 1].classList.add('done');
@@ -1780,23 +1815,26 @@ function simulateAnalysis() {
     }, delay);
   });
 
-  // Final transition
-  setTimeout(() => {
+  // Call DeepSeek API for real AI analysis, with mock fallback
+  var apiPromise = generateReportWithAI(
+    STATE.currentQuestion,
+    STATE.answerText,
+    STATE.company,
+    STATE.position,
+    STATE.resume,
+    STATE.requirements
+  );
+
+  var minAnim = new Promise(function(resolve) { setTimeout(resolve, 4200); });
+
+  Promise.all([apiPromise, minAnim]).then(function(results) {
+    var report = results[0];
     steps[3].classList.remove('current');
     steps[3].classList.add('done');
     steps[3].querySelector('.indicator').textContent = '✓';
 
-    // Generate mock report
-    STATE.currentReport = mockGenerateReport(
-      STATE.currentQuestion,
-      STATE.answerText,
-      STATE.company,
-      STATE.position,
-      STATE.resume,
-      STATE.requirements
-    );
+    STATE.currentReport = report;
 
-    // Save to history
     saveToHistory({
       id: Date.now().toString(),
       company: STATE.company,
@@ -1813,7 +1851,77 @@ function simulateAnalysis() {
     renderReport();
     goToScreen('report');
     track('report_viewed', { score: STATE.currentReport.score });
-  }, 4200);
+  }).catch(function() {
+    // Should never reach here — generateReportWithAI falls back to mock internally
+    var report = mockGenerateReport(
+      STATE.currentQuestion, STATE.answerText,
+      STATE.company, STATE.position, STATE.resume, STATE.requirements
+    );
+    STATE.currentReport = report;
+    // ... same as above
+    steps[3].classList.remove('current');
+    steps[3].classList.add('done');
+    steps[3].querySelector('.indicator').textContent = '✓';
+    saveToHistory({
+      id: Date.now().toString(),
+      company: STATE.company, position: STATE.position,
+      requirements: STATE.requirements, resume: STATE.resume,
+      question: STATE.currentQuestion, answer: STATE.answerText,
+      report: STATE.currentReport, mode: STATE.mode,
+      timestamp: new Date().toISOString()
+    });
+    renderReport();
+    goToScreen('report');
+    track('report_viewed', { score: STATE.currentReport.score });
+  });
+}
+
+function generateReportWithAI(question, answer, company, position, resume, requirements) {
+  var prompt = '你是一位资深面试官。请根据以下面试问答，给出专业的面试评估报告。\n\n' +
+    '【应聘公司】' + company + '\n' +
+    '【应聘岗位】' + position + '\n' +
+    '【岗位要求】' + (requirements || '无') + '\n' +
+    '【候选人简历要点】' + (resume || '无') + '\n' +
+    '【面试问题】' + question + '\n' +
+    '【候选人回答】' + answer + '\n\n' +
+    '请返回纯 JSON（不要 markdown 代码块包裹），格式如下：\n' +
+    '{\n' +
+    '  "score": 数字(0-100),\n' +
+    '  "comment": "总体评价，50-100字",\n' +
+    '  "intent": "面试官出此题目的考察意图分析",\n' +
+    '  "strengths": ["优点1", "优点2", "优点3"],\n' +
+    '  "weaknesses": ["不足1", "不足2", "不足3"],\n' +
+    '  "suggestions": ["改进建议1", "改进建议2", "改进建议3"],\n' +
+    '  "modelAnswer": "一个优秀的参考回答范例，300-500字，结合该岗位和公司特点" \n' +
+    '}';
+
+  return fetch('https://api.deepseek.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer sk-fa4bc773cf054d0e9aa524d01fb3143a'
+    },
+    body: JSON.stringify({
+      model: 'deepseek-chat',
+      messages: [
+        { role: 'system', content: '你是一位专业的面试评估专家。只返回JSON，不要有其他文字。' },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 2000
+    })
+  })
+  .then(function(res) { return res.json(); })
+  .then(function(data) {
+    var content = data.choices[0].message.content;
+    // Strip markdown code fences if present
+    content = content.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+    return JSON.parse(content);
+  })
+  .catch(function(err) {
+    console.error('DeepSeek API error, using mock fallback:', err);
+    return mockGenerateReport(question, answer, company, position, resume, requirements);
+  });
 }
 
 // ===== Screen 4: Report =====
