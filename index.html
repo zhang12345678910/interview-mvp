@@ -1,0 +1,2172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>面试模拟 - AI Mock Interview</title>
+<style>
+/* ===== Reset & Base ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --primary: #6366F1;
+  --primary-dark: #4F46E5;
+  --primary-light: #EEF2FF;
+  --accent: #F59E0B;
+  --success: #10B981;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --gray-50: #F9FAFB;
+  --gray-100: #F3F4F6;
+  --gray-200: #E5E7EB;
+  --gray-300: #D1D5DB;
+  --gray-400: #9CA3AF;
+  --gray-500: #6B7280;
+  --gray-600: #4B5563;
+  --gray-700: #374151;
+  --gray-800: #1F2937;
+  --gray-900: #111827;
+  --radius-sm: 8px;
+  --radius: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+  --shadow-xl: 0 20px 25px rgba(0,0,0,0.1), 0 10px 10px rgba(0,0,0,0.04);
+  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html { font-size: 16px; scroll-behavior: smooth; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background: #F1F5F9;
+  color: var(--gray-800);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ===== App Shell ===== */
+.app-container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Header ===== */
+.app-header {
+  text-align: center;
+  padding: 20px 0 12px;
+  flex-shrink: 0;
+}
+
+.app-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.app-logo .icon {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--primary), #8B5CF6);
+  border-radius: var(--radius);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+}
+
+.app-logo .text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  letter-spacing: -0.02em;
+}
+
+.app-logo .text span { color: var(--primary); }
+
+/* ===== Step Indicator ===== */
+.steps {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 0 8px;
+  flex-shrink: 0;
+}
+
+.step-dot {
+  width: 36px; height: 4px;
+  border-radius: 2px;
+  background: var(--gray-200);
+  transition: all var(--transition);
+}
+
+.step-dot.active { background: var(--primary); width: 48px; }
+.step-dot.done { background: var(--primary-light); }
+
+/* ===== Main Content Area ===== */
+.main-content { flex: 1; }
+
+/* ===== Cards ===== */
+.card {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 28px 24px;
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-100);
+}
+
+.card + .card { margin-top: 16px; }
+
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.card-header .icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.card-header .icon.blue { background: #EEF2FF; color: var(--primary); }
+.card-header .icon.amber { background: #FFFBEB; color: var(--accent); }
+.card-header .icon.green { background: #ECFDF5; color: var(--success); }
+
+.card-header h2 { font-size: 1.05rem; font-weight: 600; color: var(--gray-900); }
+.card-header p { font-size: 0.85rem; color: var(--gray-500); }
+
+/* ===== Form Elements ===== */
+.form-group { margin-bottom: 20px; }
+
+.form-group:last-child { margin-bottom: 0; }
+
+.form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--gray-700);
+  margin-bottom: 6px;
+}
+
+.form-hint {
+  font-size: 0.8rem;
+  color: var(--gray-400);
+  margin-top: 4px;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  color: var(--gray-800);
+  background: var(--gray-50);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius);
+  transition: all var(--transition);
+  outline: none;
+}
+
+.form-input::placeholder, .form-textarea::placeholder { color: var(--gray-400); }
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--primary);
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+/* ===== Buttons ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  font-family: inherit;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  line-height: 1.4;
+}
+
+.btn:active { transform: scale(0.97); }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(99,102,241,0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 20px rgba(99,102,241,0.4);
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--gray-700);
+  border: 1.5px solid var(--gray-200);
+}
+
+.btn-secondary:hover {
+  background: var(--gray-50);
+  border-color: var(--gray-300);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--primary);
+  padding: 8px 16px;
+}
+
+.btn-ghost:hover { background: var(--primary-light); }
+
+.btn-lg {
+  width: 100%;
+  padding: 14px 24px;
+  font-size: 1rem;
+}
+
+.btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+
+.btn-record {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid var(--danger);
+  color: var(--danger);
+  font-size: 1.5rem;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 0 rgba(239,68,68,0.4);
+}
+
+.btn-record:hover { box-shadow: 0 0 0 12px rgba(239,68,68,0.1); }
+
+.btn-record.recording {
+  border-color: var(--danger);
+  background: var(--danger);
+  color: #fff;
+  animation: pulse-record 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-record {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(239,68,68,0.4); }
+  50% { box-shadow: 0 0 0 16px rgba(239,68,68,0); }
+}
+
+/* ===== Screens (show/hide) ===== */
+.screen { display: none; }
+
+.screen.active {
+  display: block;
+  animation: fadeSlideIn 0.35s ease;
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Input Page ===== */
+.input-hero {
+  text-align: center;
+  padding: 8px 0 20px;
+}
+
+.input-hero h1 {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  letter-spacing: -0.03em;
+  line-height: 1.3;
+}
+
+.input-hero p {
+  font-size: 0.95rem;
+  color: var(--gray-500);
+  margin-top: 6px;
+}
+
+.feature-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  background: #fff;
+  border-radius: 20px;
+  border: 1px solid var(--gray-200);
+}
+
+.badge .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+}
+
+/* ===== Question Page ===== */
+.question-display {
+  background: linear-gradient(135deg, var(--primary-light), #F5F3FF);
+  border-radius: var(--radius);
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #E0E7FF;
+}
+
+.question-number {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--primary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 8px;
+}
+
+.question-text {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  line-height: 1.6;
+}
+
+.question-intent {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  background: #fff;
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--gray-200);
+}
+
+.record-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 0;
+}
+
+.timer {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+}
+
+.timer.warning { color: var(--warning); }
+.timer.danger { color: var(--danger); }
+
+.record-hint {
+  font-size: 0.8rem;
+  color: var(--gray-400);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0;
+  color: var(--gray-300);
+  font-size: 0.8rem;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-200);
+}
+
+.text-input-area { width: 100%; }
+
+.text-input-area .form-textarea { min-height: 100px; }
+
+.text-input-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+/* ===== Loading Screen ===== */
+.loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.loading-animation {
+  width: 64px; height: 64px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.loading-animation .ring {
+  position: absolute;
+  inset: 0;
+  border: 3px solid var(--gray-200);
+  border-radius: 50%;
+  border-top-color: var(--primary);
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-animation .inner {
+  position: absolute;
+  inset: 8px;
+  border: 3px solid var(--gray-200);
+  border-radius: 50%;
+  border-bottom-color: #8B5CF6;
+  animation: spin 1.2s linear infinite reverse;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loading-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+
+.loading-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  max-width: 320px;
+}
+
+.loading-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 32px;
+  width: 100%;
+  max-width: 280px;
+}
+
+.loading-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.85rem;
+  color: var(--gray-400);
+  transition: color 0.3s;
+}
+
+.loading-step .indicator {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--gray-200);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  transition: all 0.3s;
+}
+
+.loading-step.done {
+  color: var(--gray-700);
+}
+
+.loading-step.done .indicator {
+  background: var(--success);
+  border-color: var(--success);
+  color: #fff;
+}
+
+.loading-step.current {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.loading-step.current .indicator {
+  border-color: var(--primary);
+  animation: pulse-dot 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(99,102,241,0); }
+}
+
+/* ===== Report Page ===== */
+.report-overall {
+  text-align: center;
+  padding: 16px 0 20px;
+}
+
+.overall-label {
+  font-size: 0.85rem;
+  color: var(--gray-500);
+  margin-bottom: 4px;
+}
+
+.overall-score {
+  font-size: 3rem;
+  font-weight: 800;
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.overall-comment {
+  font-size: 0.9rem;
+  color: var(--gray-600);
+  margin-top: 8px;
+}
+
+.report-section {
+  margin-bottom: 20px;
+}
+
+.report-section:last-child { margin-bottom: 0; }
+
+.report-section h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.report-item {
+  padding: 12px 16px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+  color: var(--gray-700);
+  line-height: 1.5;
+  border-left: 3px solid transparent;
+}
+
+.report-item.strength { border-left-color: var(--success); }
+.report-item.weakness { border-left-color: var(--warning); }
+.report-item.suggestion { border-left-color: var(--primary); }
+
+.report-item:last-child { margin-bottom: 0; }
+
+.report-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.report-actions .btn { flex: 1; }
+
+.report-model-answer {
+  padding: 16px 18px;
+  background: linear-gradient(135deg, #FEFCE8, #FFFBEB);
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  color: var(--gray-800);
+  border: 1px solid #FDE68A;
+}
+
+/* ===== Usage Counter ===== */
+.usage-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #fff;
+  border-radius: var(--radius);
+  margin-bottom: 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--gray-600);
+  border: 1px solid var(--gray-200);
+}
+
+.usage-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--success);
+  display: inline-block;
+}
+
+.usage-dot.used { background: var(--gray-200); }
+
+.usage-bar.limit .usage-dot { background: var(--warning); }
+
+.btn-pro-upgrade {
+  margin-left: auto;
+  padding: 6px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: inherit;
+  color: #fff;
+  background: linear-gradient(135deg, #F59E0B, #D97706);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.btn-pro-upgrade:hover {
+  box-shadow: 0 4px 12px rgba(245,158,11,0.4);
+  transform: translateY(-1px);
+}
+
+/* ===== Pro Dialog ===== */
+.pro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.pro-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.pro-dialog {
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 32px 28px;
+  max-width: 440px;
+  width: calc(100vw - 48px);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+}
+
+.pro-dialog .pro-icon {
+  width: 56px; height: 56px;
+  margin: 0 auto 16px;
+  background: linear-gradient(135deg, #FEF3C7, #FDE68A);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+}
+
+.pro-dialog h2 {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--gray-900);
+  margin-bottom: 8px;
+}
+
+.pro-dialog .pro-price {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--accent);
+  margin: 12px 0;
+}
+
+.pro-dialog .pro-price span {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--gray-500);
+}
+
+.pro-features {
+  text-align: left;
+  margin: 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.pro-features .pro-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: var(--gray-700);
+}
+
+.pro-feature .check {
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  background: #ECFDF5;
+  color: var(--success);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.pro-dialog .btn { margin-top: 8px; width: 100%; }
+
+.pro-dialog .btn-close {
+  margin-top: 12px;
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-family: inherit;
+}
+
+.pro-dialog .btn-close:hover { color: var(--gray-600); }
+
+/* ===== Email Collection ===== */
+.email-collect {
+  display: none;
+  padding: 20px;
+  background: linear-gradient(135deg, #EEF2FF, #F5F3FF);
+  border-radius: var(--radius);
+  margin-top: 16px;
+  border: 1px solid #E0E7FF;
+  text-align: center;
+}
+
+.email-collect.show { display: block; }
+
+.email-collect h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gray-900);
+  margin-bottom: 4px;
+}
+
+.email-collect p {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+  margin-bottom: 12px;
+}
+
+.email-collect .email-row {
+  display: flex;
+  gap: 8px;
+}
+
+.email-collect .form-input {
+  flex: 1;
+  background: #fff;
+}
+
+.email-collect .btn { white-space: nowrap; }
+
+/* ===== Share Button ===== */
+.btn-share {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: inherit;
+  color: var(--primary);
+  background: var(--primary-light);
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin-top: 12px;
+}
+
+.btn-share:hover { background: #E0E7FF; }
+
+/* ===== History Sidebar ===== */
+.history-toggle {
+  position: fixed;
+  top: 20px; right: 20px;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  font-size: 1.1rem;
+  z-index: 100;
+  transition: all var(--transition);
+}
+
+.history-toggle:hover { background: var(--gray-50); }
+
+.history-badge {
+  position: absolute;
+  top: -4px; right: -4px;
+  min-width: 18px; height: 18px;
+  border-radius: 9px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 5px;
+}
+
+.history-panel {
+  position: fixed;
+  top: 0; right: 0;
+  width: 380px;
+  max-width: 100vw;
+  height: 100vh;
+  background: #fff;
+  z-index: 200;
+  box-shadow: var(--shadow-xl);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.history-panel.open { transform: translateX(0); }
+
+.history-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 199;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.history-overlay.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid var(--gray-100);
+  flex-shrink: 0;
+}
+
+.history-header h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--gray-900);
+}
+
+.history-close {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--gray-50);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+  color: var(--gray-500);
+  transition: all var(--transition);
+}
+
+.history-close:hover { background: var(--gray-100); color: var(--gray-700); }
+
+.history-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.history-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+  color: var(--gray-400);
+  font-size: 0.9rem;
+  gap: 8px;
+}
+
+.history-item {
+  padding: 14px 16px;
+  background: var(--gray-50);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  border: 1px solid transparent;
+}
+
+.history-item:hover {
+  background: #fff;
+  border-color: var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.history-item .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.history-item .company {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--gray-800);
+}
+
+.history-item .date {
+  font-size: 0.75rem;
+  color: var(--gray-400);
+}
+
+.history-item .position {
+  font-size: 0.8rem;
+  color: var(--gray-500);
+}
+
+.history-footer {
+  padding: 16px 20px;
+  border-top: 1px solid var(--gray-100);
+  flex-shrink: 0;
+}
+
+.history-footer .btn { width: 100%; }
+
+/* ===== Toast ===== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--gray-900);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  font-weight: 500;
+  z-index: 300;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+/* ===== Responsive ===== */
+@media (max-width: 640px) {
+  .app-container { padding: 12px 12px 32px; }
+  .card { padding: 20px 16px; border-radius: var(--radius); }
+  .app-logo .text { font-size: 1.1rem; }
+  .input-hero h1 { font-size: 1.4rem; }
+  .question-text { font-size: 1.05rem; }
+  .overall-score { font-size: 2.5rem; }
+  .report-actions { flex-direction: column; }
+  .btn-record { width: 68px; height: 68px; }
+  .history-panel { width: 100vw; }
+  .history-toggle { top: 12px; right: 12px; }
+  .steps { padding: 8px 0 4px; }
+}
+
+@media (min-width: 1024px) {
+  .app-container { max-width: 760px; }
+  .card { padding: 32px; }
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- Header -->
+  <header class="app-header">
+    <a class="app-logo" href="#" onclick="goToScreen('input'); return false;">
+      <div class="icon">&#x1F3A4;</div>
+      <div class="text">AI<span>Mock</span>Interview</div>
+    </a>
+  </header>
+
+  <!-- Step Indicator -->
+  <div class="steps">
+    <div class="step-dot" id="step1"></div>
+    <div class="step-dot" id="step2"></div>
+    <div class="step-dot" id="step3"></div>
+    <div class="step-dot" id="step4"></div>
+  </div>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- Screen 1: Input -->
+    <div class="screen active" id="screen-input">
+      <div class="input-hero">
+        <h1>模拟真实面试，<br>拿到心仪 Offer</h1>
+        <p>输入你的信息，AI 为你生成针对性面试题</p>
+        <div class="feature-badges">
+          <div class="badge"><span class="dot"></span>实时出题</div>
+          <div class="badge"><span class="dot"></span>语音作答</div>
+          <div class="badge"><span class="dot"></span>深度分析</div>
+          <div class="badge"><span class="dot"></span>改进建议</div>
+        </div>
+      </div>
+
+      <!-- Usage Counter -->
+      <div class="usage-bar" id="usage-bar">
+        <span id="usage-dots"></span>
+        <span id="usage-text"></span>
+        <button class="btn-pro-upgrade" id="btn-pro-upgrade" onclick="showProDialog()">
+          &#x1F525; 升级 Pro
+        </button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="icon blue">&#x1F4CB;</div>
+          <div>
+            <h2>面试信息</h2>
+            <p>填写越详细，出题越精准</p>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="company">目标公司</label>
+          <input class="form-input" id="company" type="text" placeholder="例如：字节跳动、阿里巴巴、腾讯">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="position">应聘岗位</label>
+          <input class="form-input" id="position" type="text" placeholder="例如：高级前端工程师、产品经理">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="requirements">岗位要求（JD）</label>
+          <textarea class="form-textarea" id="requirements" placeholder="粘贴目标岗位的职位描述和要求...&#10;&#10;例如：&#10;• 负责前端架构设计，优化页面性能和用户体验&#10;• 熟悉 React/Vue 框架，有大型项目经验&#10;• 具备良好的沟通能力和团队协作精神" style="min-height:100px;"></textarea>
+          <div class="form-hint">越详细的 JD，AI 出题越贴近真实面试</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="resume">个人简历</label>
+          <textarea class="form-textarea" id="resume" placeholder="直接粘贴你的简历文本，包括教育背景、工作经历、项目经验、技能等...&#10;&#10;例如：&#10;• 5年前端开发经验，熟悉 React/Vue&#10;• 主导过日均百万 UV 的 B 端项目&#10;• 计算机硕士，研究方向为分布式系统"></textarea>
+          <div class="form-hint">你的信息仅保存在本地，不会上传服务器</div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="generateQuestion()" id="btn-generate">
+          生成面试题 &#x2192;
+        </button>
+      </div>
+
+      <!-- Email Collection -->
+      <div class="email-collect" id="email-collect">
+        <h3>&#x1F4EB; 今天的免费次数已用完</h3>
+        <p>留下邮箱，明天自动恢复次数，还可获得 Pro 版内测资格</p>
+        <div class="email-row">
+          <input class="form-input" id="email-input" type="email" placeholder="your@email.com">
+          <button class="btn btn-primary btn-sm" onclick="submitEmail()">提交</button>
+        </div>
+        <div id="email-thanks" style="display:none;margin-top:10px;font-size:0.85rem;color:var(--success);font-weight:500;">
+          &#x2705; 感谢！我们会第一时间通知你
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2: Question & Answer -->
+    <div class="screen" id="screen-question">
+      <div class="card">
+        <div class="question-display" id="question-display">
+          <div class="question-number" id="q-number">面试题</div>
+          <div class="question-text" id="q-text"></div>
+          <div class="question-intent" id="q-intent"></div>
+        </div>
+
+        <!-- Recording Area -->
+        <div class="record-area" id="record-area">
+          <div class="timer" id="timer">2:00</div>
+          <button class="btn-record" id="btn-record" onclick="toggleRecording()" title="开始录音">
+            &#x1F3A4;
+          </button>
+          <div class="record-hint" id="record-hint">点击开始录音，限时 2 分钟</div>
+        </div>
+
+        <div class="divider">或 文字输入</div>
+
+        <div class="text-input-area" id="text-input-area">
+          <textarea class="form-textarea" id="text-answer" placeholder="在这里输入你的回答...（最多 500 字）" maxlength="500"></textarea>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+            <span style="font-size:0.8rem;color:var(--gray-400);"><span id="char-count">0</span>/500</span>
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-lg" onclick="submitAnswer()" id="btn-submit" disabled style="margin-top:20px;">
+          提交回答，查看分析
+        </button>
+      </div>
+    </div>
+
+    <!-- Screen 3: Loading -->
+    <div class="screen" id="screen-loading">
+      <div class="card">
+        <div class="loading-content">
+          <div class="loading-animation">
+            <div class="ring"></div>
+            <div class="inner"></div>
+          </div>
+          <div class="loading-title">AI 正在分析你的回答</div>
+          <div class="loading-subtitle">正在从多个维度评估，预计需要 5-10 秒</div>
+          <div class="loading-steps">
+            <div class="loading-step" id="load-step1"><span class="indicator"></span>语音识别 & 文本处理</div>
+            <div class="loading-step" id="load-step2"><span class="indicator"></span>语义理解 & 要点提取</div>
+            <div class="loading-step" id="load-step3"><span class="indicator"></span>对比分析 & 生成建议</div>
+            <div class="loading-step" id="load-step4"><span class="indicator"></span>生成面试报告</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 4: Report -->
+    <div class="screen" id="screen-report">
+      <div class="card" style="text-align:center;">
+        <div class="report-overall">
+          <div class="overall-label">综合评估</div>
+          <div class="overall-score" id="report-score"></div>
+          <div class="overall-comment" id="report-comment"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="report-section">
+          <h3>&#x1F3AF; 问题考察意图</h3>
+          <div class="report-item suggestion" id="report-intent"></div>
+        </div>
+        <div class="report-section">
+          <h3>&#x2705; 回答亮点</h3>
+          <div id="report-strengths"></div>
+        </div>
+        <div class="report-section">
+          <h3>&#x26A0;&#xFE0F; 不足与盲区</h3>
+          <div id="report-weaknesses"></div>
+        </div>
+        <div class="report-section">
+          <h3>&#x1F4A1; 提升建议</h3>
+          <div id="report-suggestions"></div>
+        </div>
+        <div class="report-section" id="report-model-answer-section">
+          <h3>&#x1F4D6; 优秀回答范文</h3>
+          <div id="report-model-answer" class="report-model-answer"></div>
+        </div>
+
+        <!-- Feedback -->
+        <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--gray-100);text-align:center;">
+          <p style="font-size:0.85rem;color:var(--gray-500);margin-bottom:10px;">这份报告对你有帮助吗？</p>
+          <div style="display:flex;gap:10px;justify-content:center;">
+            <button class="btn btn-secondary btn-sm" id="btn-feedback-up" onclick="sendFeedback('up')" style="min-width:80px;">
+              &#x1F44D; 有帮助
+            </button>
+            <button class="btn btn-secondary btn-sm" id="btn-feedback-down" onclick="sendFeedback('down')" style="min-width:80px;">
+              &#x1F44E; 有待改进
+            </button>
+          </div>
+          <div id="feedback-thanks" style="display:none;margin-top:8px;font-size:0.85rem;color:var(--success);font-weight:500;">
+            &#x2705; 感谢反馈！
+          </div>
+        </div>
+
+        <div class="report-actions">
+          <button class="btn btn-secondary" onclick="generateSimilar()">&#x1F504; 换一道同类题</button>
+          <button class="btn btn-primary" onclick="generateFollowUp()">&#x27A1;&#xFE0F; 面试官追问</button>
+        </div>
+      </div>
+
+      <div style="text-align:center;margin-top:16px;display:flex;flex-direction:column;align-items:center;gap:8px;">
+        <button class="btn-share" onclick="shareReport()" id="btn-share">&#x1F4CB; 复制报告摘要，分享给朋友</button>
+        <button class="btn btn-ghost" onclick="goToScreen('input')">&#x2190; 重新开始</button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- History Toggle -->
+<button class="history-toggle" id="history-toggle" onclick="toggleHistory()" title="历史记录">
+  &#x1F4C4;
+  <span class="history-badge" id="history-badge" style="display:none;">0</span>
+</button>
+
+<!-- Pro Dialog -->
+<div class="pro-overlay" id="pro-overlay" onclick="closeProDialog(event)">
+  <div class="pro-dialog" onclick="event.stopPropagation()">
+    <div class="pro-icon">&#x1F525;</div>
+    <h2>升级到 Pro 版</h2>
+    <p style="font-size:0.9rem;color:var(--gray-500);">解锁全部功能，面试准备更充分</p>
+    <div class="pro-price" style="font-size:1rem;font-weight:600;color:var(--gray-600);">价格即将公布</div>
+    <div class="pro-features">
+      <div class="pro-feature"><span class="check">&#10003;</span>每日无限次面试模拟</div>
+      <div class="pro-feature"><span class="check">&#10003;</span>深度追问 + 完整报告</div>
+      <div class="pro-feature"><span class="check">&#10003;</span>优秀回答范文参考</div>
+      <div class="pro-feature"><span class="check">&#10003;</span>报告导出 PDF / 分享</div>
+      <div class="pro-feature"><span class="check">&#10003;</span>专属行业题库</div>
+    </div>
+    <div class="email-row" style="margin-bottom:8px;">
+      <input class="form-input" id="pro-email-input" type="email" placeholder="your@email.com">
+    </div>
+    <button class="btn btn-primary" onclick="submitProInterest()">&#x1F4EB; 预约 Pro 版，获取上线通知</button>
+    <button class="btn-close" onclick="closeProDialog()">以后再说</button>
+  </div>
+</div>
+
+<!-- History Overlay -->
+<div class="history-overlay" id="history-overlay" onclick="toggleHistory()"></div>
+
+<!-- History Panel -->
+<div class="history-panel" id="history-panel">
+  <div class="history-header">
+    <h2>&#x1F4DD; 面试记录</h2>
+    <button class="history-close" onclick="toggleHistory()">&#x2715;</button>
+  </div>
+  <div class="history-list" id="history-list">
+    <div class="history-empty">暂无面试记录</div>
+  </div>
+  <div class="history-footer">
+    <button class="btn btn-secondary btn-sm" onclick="clearHistory()" style="width:100%;">清除全部记录</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== Core State =====
+const STATE = {
+  screen: 'input',
+  company: '',
+  position: '',
+  requirements: '',
+  resume: '',
+  currentQuestion: null,
+  currentIntent: null,
+  answerText: '',
+  isRecording: false,
+  recordingTime: 0,
+  timerInterval: null,
+  mediaRecorder: null,
+  audioChunks: [],
+  mode: 'initial', // 'initial' | 'followUp' | 'similar'
+  conversationHistory: [], // for follow-up context
+  currentReport: null
+};
+
+// ===== Umami Event Tracking =====
+function track(eventName, data) {
+  if (typeof umami !== 'undefined' && umami.track) {
+    umami.track(eventName, data);
+  }
+  // Also log for development
+  console.log('[Track]', eventName, data || '');
+}
+
+// ===== UUID Generator =====
+function getUserId() {
+  let id = localStorage.getItem('mvp_user_id');
+  if (!id) {
+    id = 'u_' + crypto.randomUUID();
+    localStorage.setItem('mvp_user_id', id);
+  }
+  return id;
+}
+
+// ===== LocalStorage Helpers =====
+function getHistory() {
+  try {
+    const raw = localStorage.getItem('mvp_history');
+    return raw ? JSON.parse(raw) : [];
+  } catch { return []; }
+}
+
+function saveToHistory(record) {
+  const history = getHistory();
+  history.unshift(record);
+  // Keep max 50 records
+  if (history.length > 50) history.length = 50;
+  localStorage.setItem('mvp_history', JSON.stringify(history));
+  updateHistoryBadge();
+}
+
+function clearHistory() {
+  localStorage.removeItem('mvp_history');
+  updateHistoryBadge();
+  renderHistory();
+  showToast('历史记录已清除');
+  track('history_cleared');
+}
+
+function getLastSession() {
+  const history = getHistory();
+  return history.length > 0 ? history[0] : null;
+}
+
+// ===== Daily Usage Tracking =====
+function getDailyUsage() {
+  const today = new Date().toISOString().slice(0, 10);
+  try {
+    const data = JSON.parse(localStorage.getItem('mvp_daily_usage') || '{}');
+    if (data.date !== today) return { date: today, count: 0 };
+    return data;
+  } catch { return { date: today, count: 0 }; }
+}
+
+function incrementUsage() {
+  const data = getDailyUsage();
+  data.count++;
+  localStorage.setItem('mvp_daily_usage', JSON.stringify(data));
+  updateUsageDisplay();
+}
+
+function getRemainingUsage() {
+  const MAX_FREE = 3;
+  const data = getDailyUsage();
+  return Math.max(0, MAX_FREE - data.count);
+}
+
+function updateUsageDisplay() {
+  const MAX_FREE = 3;
+  const remaining = getRemainingUsage();
+  const used = MAX_FREE - remaining;
+
+  const dotsEl = document.getElementById('usage-dots');
+  let dots = '';
+  for (let i = 0; i < MAX_FREE; i++) {
+    dots += '<span class="usage-dot' + (i >= remaining ? ' used' : '') + '"></span>';
+  }
+  dotsEl.innerHTML = dots;
+
+  const textEl = document.getElementById('usage-text');
+  const bar = document.getElementById('usage-bar');
+
+  if (remaining > 0) {
+    textEl.textContent = '今日剩余免费次数：' + remaining + '/' + MAX_FREE;
+    bar.classList.remove('limit');
+  } else {
+    textEl.textContent = '今日免费次数已用完';
+    bar.classList.add('limit');
+  }
+
+  // Show/hide email collection
+  const emailCollect = document.getElementById('email-collect');
+  if (remaining <= 0) {
+    emailCollect.classList.add('show');
+  } else {
+    emailCollect.classList.remove('show');
+  }
+}
+
+function submitEmail() {
+  const email = document.getElementById('email-input').value.trim();
+  if (!email || !email.includes('@')) {
+    showToast('请输入有效的邮箱地址');
+    return;
+  }
+
+  // Store locally + track
+  const emails = JSON.parse(localStorage.getItem('mvp_emails') || '[]');
+  if (!emails.includes(email)) {
+    emails.push(email);
+    localStorage.setItem('mvp_emails', JSON.stringify(emails));
+  }
+
+  document.getElementById('email-thanks').style.display = 'block';
+  document.getElementById('email-input').value = '';
+  track('email_submitted', { email });
+}
+
+// ===== Pro Dialog =====
+function showProDialog() {
+  document.getElementById('pro-overlay').classList.add('show');
+  track('pro_dialog_viewed');
+}
+
+function closeProDialog(event) {
+  if (event && event.target !== document.getElementById('pro-overlay')) return;
+  document.getElementById('pro-overlay').classList.remove('show');
+}
+
+function submitProInterest() {
+  const email = document.getElementById('pro-email-input').value.trim();
+  if (!email || !email.includes('@')) {
+    showToast('请输入有效的邮箱地址');
+    return;
+  }
+
+  const emails = JSON.parse(localStorage.getItem('mvp_pro_emails') || '[]');
+  if (!emails.includes(email)) {
+    emails.push(email);
+    localStorage.setItem('mvp_pro_emails', JSON.stringify(emails));
+  }
+
+  document.getElementById('pro-overlay').classList.remove('show');
+  showToast('已登记！Pro 版上线后会第一时间通知你');
+  track('pro_interest_submitted', { email });
+}
+
+// ===== Share =====
+function shareReport() {
+  const r = STATE.currentReport;
+  if (!r) return;
+
+  const shareText = [
+    '我在 AI Mock Interview 上模拟了 ' + STATE.company + ' ' + STATE.position + ' 面试',
+    '获得了 ' + r.score + ' 分',
+    '',
+    '你也来试试，看看面试官会问你什么？',
+    'https://aimock.interview （即将上线）'
+  ].join('\n');
+
+  navigator.clipboard.writeText(shareText).then(() => {
+    showToast('报告摘要已复制，分享给朋友吧！');
+    track('report_shared', { score: r.score });
+    const btn = document.getElementById('btn-share');
+    btn.innerHTML = '&#x2705; 已复制';
+    setTimeout(() => {
+      btn.innerHTML = '&#x1F4CB; 复制报告摘要，分享给朋友';
+    }, 2000);
+  }).catch(() => {
+    showToast('复制失败，请手动截图分享');
+  });
+}
+
+// ===== Toast =====
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  clearTimeout(toast._timeout);
+  toast._timeout = setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ===== Screen Navigation =====
+function goToScreen(name) {
+  STATE.screen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById('screen-' + name);
+  if (target) target.classList.add('active');
+
+  // Update step indicators
+  const steps = { input: 1, question: 2, loading: 3, report: 4 };
+  const current = steps[name] || 1;
+  for (let i = 1; i <= 4; i++) {
+    const dot = document.getElementById('step' + i);
+    dot.classList.remove('active', 'done');
+    if (i < current) dot.classList.add('done');
+    if (i === current) dot.classList.add('active');
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  if (name === 'question') setupQuestionScreen();
+  if (name === 'input') setupInputScreen();
+  if (name === 'loading') simulateAnalysis();
+}
+
+// ===== Screen 1: Input =====
+function setupInputScreen() {
+  updateUsageDisplay();
+  // Restore from last session if available
+  const last = getLastSession();
+  if (last && !document.getElementById('company').value) {
+    document.getElementById('company').value = last.company || '';
+    document.getElementById('position').value = last.position || '';
+    document.getElementById('requirements').value = last.requirements || '';
+    document.getElementById('resume').value = last.resume || '';
+  }
+}
+
+function generateQuestion() {
+  const company = document.getElementById('company').value.trim();
+  const position = document.getElementById('position').value.trim();
+  const requirements = document.getElementById('requirements').value.trim();
+  const resume = document.getElementById('resume').value.trim();
+
+  if (!company || !position || !requirements || !resume) {
+    showToast('请填写完整的面试信息（公司、岗位、岗位要求、简历）');
+    return;
+  }
+
+  // Enforce daily limit
+  if (getRemainingUsage() <= 0) {
+    document.getElementById('email-collect').classList.add('show');
+    showToast('今日免费次数已用完，请留下邮箱申请 Pro 版');
+    track('usage_limit_hit');
+    return;
+  }
+
+  STATE.company = company;
+  STATE.position = position;
+  STATE.requirements = requirements;
+  STATE.resume = resume;
+  STATE.mode = 'initial';
+  STATE.conversationHistory = [];
+  STATE.currentQuestion = null;
+  STATE.currentIntent = null;
+  STATE.answerText = '';
+
+  // Generate mock question based on input
+  const { question, intent } = mockGenerateQuestion(company, position, resume, null);
+
+  STATE.currentQuestion = question;
+  STATE.currentIntent = intent;
+
+  incrementUsage();
+  track('question_generated', { company, position, mode: STATE.mode });
+
+  goToScreen('question');
+}
+
+// ===== Screen 2: Question =====
+function setupQuestionScreen() {
+  document.getElementById('q-text').textContent = STATE.currentQuestion;
+  document.getElementById('q-intent').textContent = '考察意图：' + STATE.currentIntent;
+  document.getElementById('q-number').textContent =
+    STATE.mode === 'followUp' ? '追问' : '面试题';
+
+  // Reset recording state
+  resetRecording();
+  document.getElementById('text-answer').value = '';
+  document.getElementById('char-count').textContent = '0';
+  document.getElementById('btn-submit').disabled = true;
+  document.getElementById('record-area').style.display = 'flex';
+  document.getElementById('text-input-area').style.display = 'block';
+}
+
+function resetRecording() {
+  STATE.isRecording = false;
+  STATE.recordingTime = 0;
+  STATE.answerText = '';
+  if (STATE.timerInterval) clearInterval(STATE.timerInterval);
+  if (STATE.mediaRecorder && STATE.mediaRecorder.state === 'recording') {
+    STATE.mediaRecorder.stop();
+  }
+  STATE.mediaRecorder = null;
+  STATE.audioChunks = [];
+
+  const btn = document.getElementById('btn-record');
+  btn.classList.remove('recording');
+  btn.innerHTML = '&#x1F3A4;';
+  document.getElementById('timer').textContent = '2:00';
+  document.getElementById('timer').classList.remove('warning', 'danger');
+  document.getElementById('record-hint').textContent = '点击开始录音，限时 2 分钟';
+  document.getElementById('btn-submit').disabled = true;
+}
+
+async function toggleRecording() {
+  if (STATE.isRecording) {
+    stopRecording();
+    return;
+  }
+
+  // Check if text has been entered
+  if (document.getElementById('text-answer').value.trim()) {
+    if (!confirm('开始录音将清除已输入的文字，确定继续吗？')) return;
+    document.getElementById('text-answer').value = '';
+    document.getElementById('char-count').textContent = '0';
+  }
+
+  // Check browser support
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('当前浏览器不支持录音功能，请使用 Chrome/Firefox/Edge 或改用文字输入');
+    track('recording_error', { error: 'getUserMedia not supported' });
+    return;
+  }
+
+  if (typeof MediaRecorder === 'undefined') {
+    showToast('当前浏览器不支持录音功能，请升级浏览器或改用文字输入');
+    track('recording_error', { error: 'MediaRecorder not supported' });
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    // Try multiple MIME types — audio/webm doesn't work on all browsers
+    const mimeTypes = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/mp4',
+      'audio/ogg;codecs=opus',
+      'audio/wav',
+      ''  // empty = browser default
+    ];
+
+    let mimeType = '';
+    for (const mt of mimeTypes) {
+      if (mt === '' || MediaRecorder.isTypeSupported(mt)) {
+        mimeType = mt;
+        break;
+      }
+    }
+
+    const options = mimeType ? { mimeType } : {};
+    STATE.mediaRecorder = new MediaRecorder(stream, options);
+    STATE.audioChunks = [];
+
+    STATE.mediaRecorder.ondataavailable = (e) => {
+      if (e.data.size > 0) STATE.audioChunks.push(e.data);
+    };
+
+    STATE.mediaRecorder.onstop = () => {
+      stream.getTracks().forEach(t => t.stop());
+      // Simulate speech recognition result
+      STATE.answerText = mockSpeechToText(STATE.audioChunks);
+      document.getElementById('text-answer').value = STATE.answerText;
+      document.getElementById('char-count').textContent = STATE.answerText.length;
+      document.getElementById('btn-submit').disabled = !STATE.answerText.trim();
+    };
+
+    STATE.mediaRecorder.onerror = (err) => {
+      console.error('MediaRecorder error:', err);
+      stopRecording();
+      showToast('录音过程中出错，请重试或使用文字输入');
+      track('recording_error', { error: 'MediaRecorder error' });
+    };
+
+    STATE.mediaRecorder.start();
+    STATE.isRecording = true;
+    STATE.recordingTime = 120; // 2 minutes
+
+    const btn = document.getElementById('btn-record');
+    btn.classList.add('recording');
+    btn.innerHTML = '&#x23F9;';
+    document.getElementById('record-hint').textContent = '点击停止录音';
+
+    track('recording_started', { mimeType: mimeType || 'default' });
+
+    STATE.timerInterval = setInterval(() => {
+      STATE.recordingTime--;
+      const mins = Math.floor(STATE.recordingTime / 60);
+      const secs = STATE.recordingTime % 60;
+      const timerEl = document.getElementById('timer');
+      timerEl.textContent = mins + ':' + secs.toString().padStart(2, '0');
+
+      if (STATE.recordingTime <= 30) timerEl.classList.add('warning');
+      if (STATE.recordingTime <= 10) timerEl.classList.add('danger');
+      if (STATE.recordingTime <= 0) {
+        stopRecording();
+        showToast('录音时间到');
+      }
+    }, 1000);
+
+  } catch (err) {
+    console.error('Recording error:', err);
+    let msg = '无法访问麦克风';
+    if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+      msg = '麦克风权限被拒绝，请在浏览器设置中允许访问麦克风，或使用文字输入';
+    } else if (err.name === 'NotFoundError') {
+      msg = '未检测到麦克风设备，请检查设备连接';
+    } else if (err.name === 'NotReadableError') {
+      msg = '麦克风被其他应用占用，请关闭其他录音应用后重试';
+    }
+    showToast(msg);
+    track('recording_error', { error: err.name || err.message });
+  }
+}
+
+function stopRecording() {
+  STATE.isRecording = false;
+  if (STATE.timerInterval) clearInterval(STATE.timerInterval);
+  if (STATE.mediaRecorder && STATE.mediaRecorder.state === 'recording') {
+    STATE.mediaRecorder.stop();
+  }
+
+  const btn = document.getElementById('btn-record');
+  btn.classList.remove('recording');
+  btn.innerHTML = '&#x1F3A4;';
+  document.getElementById('record-hint').textContent = '点击重新录音';
+
+  track('recording_stopped', { duration: 120 - STATE.recordingTime });
+}
+
+// Text input handler
+document.addEventListener('DOMContentLoaded', () => {
+  const textarea = document.getElementById('text-answer');
+  if (textarea) {
+    textarea.addEventListener('input', () => {
+      const len = textarea.value.length;
+      document.getElementById('char-count').textContent = len;
+      document.getElementById('btn-submit').disabled = len === 0;
+      STATE.answerText = textarea.value;
+    });
+  }
+});
+
+function submitAnswer() {
+  const text = STATE.answerText.trim();
+  if (!text) {
+    showToast('请录音或输入文字回答');
+    return;
+  }
+
+  track('answer_submitted', {
+    mode: STATE.mode,
+    inputType: document.getElementById('text-answer').value === STATE.answerText ? 'text' : 'voice',
+    length: text.length
+  });
+
+  goToScreen('loading');
+}
+
+// ===== Screen 3: Loading =====
+function simulateAnalysis() {
+  const steps = [
+    document.getElementById('load-step1'),
+    document.getElementById('load-step2'),
+    document.getElementById('load-step3'),
+    document.getElementById('load-step4')
+  ];
+
+  // Reset all steps
+  steps.forEach(s => { s.classList.remove('done', 'current'); });
+  steps[0].classList.add('current');
+
+  const timings = [800, 1600, 2400, 3200];
+  timings.forEach((delay, i) => {
+    setTimeout(() => {
+      if (i > 0) {
+        steps[i - 1].classList.remove('current');
+        steps[i - 1].classList.add('done');
+        steps[i - 1].querySelector('.indicator').textContent = '✓';
+      }
+      steps[i].classList.add('current');
+    }, delay);
+  });
+
+  // Final transition
+  setTimeout(() => {
+    steps[3].classList.remove('current');
+    steps[3].classList.add('done');
+    steps[3].querySelector('.indicator').textContent = '✓';
+
+    // Generate mock report
+    STATE.currentReport = mockGenerateReport(
+      STATE.currentQuestion,
+      STATE.answerText,
+      STATE.company,
+      STATE.position,
+      STATE.resume,
+      STATE.requirements
+    );
+
+    // Save to history
+    saveToHistory({
+      id: Date.now().toString(),
+      company: STATE.company,
+      position: STATE.position,
+      requirements: STATE.requirements,
+      resume: STATE.resume,
+      question: STATE.currentQuestion,
+      answer: STATE.answerText,
+      report: STATE.currentReport,
+      mode: STATE.mode,
+      timestamp: new Date().toISOString()
+    });
+
+    renderReport();
+    goToScreen('report');
+    track('report_viewed', { score: STATE.currentReport.score });
+  }, 4200);
+}
+
+// ===== Screen 4: Report =====
+function renderReport() {
+  const r = STATE.currentReport;
+  if (!r) return;
+
+  document.getElementById('report-score').textContent = r.score + '分';
+  document.getElementById('report-comment').textContent = r.comment;
+  document.getElementById('report-intent').textContent = r.intent;
+
+  const strengthsEl = document.getElementById('report-strengths');
+  strengthsEl.innerHTML = r.strengths.map(s =>
+    '<div class="report-item strength">' + escapeHtml(s) + '</div>'
+  ).join('');
+
+  const weaknessesEl = document.getElementById('report-weaknesses');
+  weaknessesEl.innerHTML = r.weaknesses.map(w =>
+    '<div class="report-item weakness">' + escapeHtml(w) + '</div>'
+  ).join('');
+
+  const suggestionsEl = document.getElementById('report-suggestions');
+  suggestionsEl.innerHTML = r.suggestions.map(s =>
+    '<div class="report-item suggestion">' + escapeHtml(s) + '</div>'
+  ).join('');
+
+  const modelAnswerEl = document.getElementById('report-model-answer');
+  modelAnswerEl.textContent = r.modelAnswer || '暂无范文';
+
+  // Reset feedback UI
+  document.getElementById('btn-feedback-up').disabled = false;
+  document.getElementById('btn-feedback-down').disabled = false;
+  document.getElementById('feedback-thanks').style.display = 'none';
+}
+
+function generateSimilar() {
+  STATE.mode = 'similar';
+  const { question, intent } = mockGenerateQuestion(
+    STATE.company, STATE.position, STATE.resume, null
+  );
+  STATE.currentQuestion = question;
+  STATE.currentIntent = intent;
+  STATE.answerText = '';
+
+  track('question_generated', { company: STATE.company, mode: 'similar' });
+  goToScreen('question');
+}
+
+function generateFollowUp() {
+  STATE.mode = 'followUp';
+  STATE.conversationHistory.push({
+    question: STATE.currentQuestion,
+    answer: STATE.answerText
+  });
+
+  const { question, intent } = mockGenerateQuestion(
+    STATE.company, STATE.position, STATE.resume,
+    STATE.conversationHistory
+  );
+  STATE.currentQuestion = question;
+  STATE.currentIntent = intent;
+  STATE.answerText = '';
+
+  track('question_generated', { company: STATE.company, mode: 'followUp' });
+  goToScreen('question');
+}
+
+// ===== Mock AI: Question Generation =====
+function mockGenerateQuestion(company, position, resume, history) {
+  const isFollowUp = history && history.length > 0;
+
+  const questionBank = {
+    initial: [
+      { q: '请介绍一个你认为最有挑战性的项目，你在其中扮演了什么角色？遇到了哪些技术难点？', i: '考察候选人的项目深度、问题解决能力和自我认知' },
+      { q: '在' + company + '的' + position + '岗位上，你认为最大的挑战会是什么？你打算如何应对？', i: '考察候选人对岗位的理解深度和准备程度' },
+      { q: '如果让你从零搭建一个高并发的后端系统，你会如何设计技术架构？请说明关键的技术选型理由。', i: '考察系统设计能力、技术广度和决策思维' },
+      { q: '描述一次你与团队成员发生分歧的经历，你是如何处理的？最终结果如何？', i: '考察沟通协作能力、冲突处理和情商' },
+      { q: '请分享一个你主动推动的改进或创新，效果如何？过程中遇到了哪些阻力？', i: '考察主动性和推动力，是否具备 Owner 意识' },
+      { q: '假设你入职后发现项目中存在严重的技术债务，你会如何制定改进计划并推动落地？', i: '考察工程素养、优先级判断和落地能力' },
+      { q: '讲一个你从失败中学到的教训，它如何影响了你的后续决策？', i: '考察复盘能力、成长心态和抗压能力' },
+    ],
+    similar: [
+      { q: '如果给你一个机会重新做你简历上的某个项目，你会做出哪些不同的选择？', i: '考察反思能力和技术成长轨迹' },
+      { q: '在' + company + '这样的公司里，你期望在前 90 天达成什么目标？', i: '考察目标规划能力和对公司的了解' },
+      { q: '请分享你对' + position + '这个领域未来 3 年发展趋势的看法。', i: '考察行业洞察力和技术前瞻性' },
+    ],
+    followUp: [
+      { q: '你刚才提到的技术方案，如果业务需求突然变化，要求系统必须支持 10 倍流量，你的设计会有哪些调整？', i: '追问考察技术方案的扩展性和候选人的应变能力' },
+      { q: '你在前面提到"团队协作"很重要，能否具体说说你如何衡量一个团队的工程效率？', i: '深挖候选人对工程管理的实际理解深度' },
+      { q: '你提到过去的项目经验很丰富，但' + company + '的业务场景可能完全不同。你如何快速适应新的业务领域？', i: '考察学习能力和知识迁移能力' },
+      { q: '既然你做了刚才说的这些工作，那有没有什么事情是你觉得"本可以做得更好"但没有去做的？为什么？', i: '考察自我反思的深度和优先级判断' },
+    ]
+  };
+
+  const bankKey = isFollowUp ? 'followUp' : (STATE.mode === 'similar' ? 'similar' : 'initial');
+  const bank = questionBank[bankKey];
+  const pick = bank[Math.floor(Math.random() * bank.length)];
+
+  return { question: pick.q, intent: pick.i };
+}
+
+// ===== Mock AI: Speech Recognition =====
+function mockSpeechToText(chunks) {
+  // In production: POST audio to Whisper API
+  // For MVP: return a simulated transcription
+  const mockAnswers = [
+    '我在上一家公司负责过一个高并发支付系统的重构项目。当时系统在高峰期会出现严重的延迟和超时问题，日均订单量达到百万级别。我作为技术负责人，首先做了全链路的性能分析，发现瓶颈主要在数据库的锁竞争和缓存穿透上。我们引入了读写分离、分库分表，并且用 Redis 做了多级缓存。最终系统吞吐量提升了 5 倍，P99 延迟从 3 秒降到了 200 毫秒。这个项目让我学到了在做技术选型时一定要基于数据而不是直觉。',
+    '我处理过的一次团队分歧是关于是否要引入微服务架构。当时团队一部分人认为微服务是趋势应该尽快迁移，但我觉得我们当时的业务规模和团队人数还不适合。我组织了一次技术评审会，让双方都拿出具体的论据和数据，最终我们达成了一个折中方案：先在一些非核心模块试点，验证可行性和成本后再决定是否全面推广。',
+    '我在项目中遇到的最大挑战是跨部门协作。我们有一个项目需要协调前端、后端、数据、运营四个团队，每个团队的优先级都不一样。我主动建立了一个周会机制和共享看板，确保信息透明。同时我也会定期跟各团队的 Leader 一对一沟通，了解他们的痛点和诉求。最终项目按时交付，而且各团队对协作过程的满意度都很高。',
+    '我认为在当前的岗位上，最大的挑战是如何在快速迭代和代码质量之间找到平衡。我的策略是：对于核心路径必须保证充分的测试覆盖和 Code Review，对于实验性功能可以先快速上线验证，收集数据后再决定是优化还是回滚。同时我会推动团队建立一套技术债看板，让技术改进工作变得可视化和可量化。'
+  ];
+  return mockAnswers[Math.floor(Math.random() * mockAnswers.length)];
+}
+
+// ===== Mock AI: Report Generation =====
+function mockGenerateReport(question, answer, company, position, resume, requirements) {
+  const wordCount = answer.length;
+
+  // Extract key terms from resume/JD for personalization
+  const allText = (resume + ' ' + requirements).toLowerCase();
+  const techKeywords = ['react', 'vue', 'angular', 'node', 'python', 'java', 'go', 'golang',
+    'spring', 'docker', 'kubernetes', 'k8s', 'mysql', 'redis', 'mongodb', '微服务',
+    '前端', '后端', '全栈', '架构', '机器学习', 'ai', '数据', '运维', '产品', '设计',
+    '移动端', 'android', 'ios', 'flutter', '小程序', 'h5', 'css', 'typescript',
+    'aws', '阿里云', 'devops', 'ci/cd', '敏捷', 'scrum', '测试', '安全'];
+  const foundTech = techKeywords.filter(k => allText.includes(k));
+  const primaryTech = foundTech.length > 0 ? foundTech[0] : '技术';
+  const techStack = foundTech.length >= 2
+    ? foundTech[0] + ' 和 ' + foundTech[1]
+    : primaryTech;
+
+  // Detect if tech role or non-tech
+  const isTech = foundTech.length > 0 || /工程师|开发|程序员|架构|前端|后端|算法/i.test(position + resume);
+
+  // Score based on answer length (mock logic)
+  let score, comment, strengths, weaknesses, suggestions;
+
+  if (wordCount < 50) {
+    score = 45 + Math.floor(Math.random() * 15);
+    comment = '回答过于简短，缺乏具体的案例和数据支撑，建议进一步展开。';
+    strengths = [
+      '态度坦诚，直接回应了问题',
+      '有一定的核心观点表达'
+    ];
+    weaknesses = [
+      '缺少具体的项目案例和数据，说服力不足',
+      '没有运用 STAR 法则（情境-任务-行动-结果）来组织回答',
+      '对' + primaryTech + '相关细节的描述不够深入，停留在表面'
+    ];
+    suggestions = [
+      '学习使用 STAR 法则组织面试回答，每个观点配一个具体案例',
+      '准备 3-5 个核心项目故事，每个都包含具体数据和成果',
+      '针对' + company + '的' + position + '岗位，建议深入研究其技术博客和公开分享，了解其' + techStack + '技术栈和挑战',
+      '推荐阅读：《Cracking the Coding Interview》中的行为面试章节'
+    ];
+  } else if (wordCount < 200) {
+    score = 60 + Math.floor(Math.random() * 15);
+    comment = '回答结构完整，但深度和细节可以进一步加强，尤其在' + primaryTech + '相关亮点的提炼上。';
+    strengths = [
+      '回答有清晰的结构和逻辑主线',
+      '涉及到了具体的工作场景和经历',
+      '展现了基本的专业素养和沟通能力'
+    ];
+    weaknesses = [
+      '缺少量化的成果数据（如性能提升百分比、用户增长等）',
+      '对于遇到的挑战描述不够深入，未能体现你在' + primaryTech + '领域的思考过程',
+      '对' + company + '的业务特点缺乏针对性的关联'
+    ];
+    suggestions = [
+      '每个项目描述都要附带一个可量化的成果指标',
+      '练习"挑战 → 思考 → 行动 → 结果 → 反思"的五步回答模型',
+      '针对目标公司做针对性准备：研究' + company + '最近的' + techStack + '技术动态和业务方向',
+      '推荐使用"面试模拟"功能多做几次练习，每次关注一个改进点'
+    ];
+  } else {
+    score = 75 + Math.floor(Math.random() * 20);
+    comment = '回答质量较高，结构清晰、有案例有数据，展现了较强的综合素质。';
+    strengths = [
+      '回答结构清晰，运用了场景-行动-结果的逻辑框架',
+      '包含了具体的项目案例，可信度高',
+      '展现了较强的' + primaryTech + '深度和问题解决能力',
+      '对团队协作和沟通方面有成熟的理解'
+    ];
+    weaknesses = [
+      '可以进一步突出你的个人贡献，而非团队整体成果',
+      '对于失败或不足的反思还不够深入',
+      '对行业趋势和竞品分析方面的见解可以更深入'
+    ];
+    suggestions = [
+      '准备 1-2 个"失败案例"，展示你的反思和成长能力',
+      '关注' + company + '所在赛道的最新动态，面试中展现行业洞察力',
+      '针对' + position + '的高级要求，深入准备系统设计和架构相关的问题',
+      '建议进行模拟压力面试，练习在追问下保持回答质量和逻辑性'
+    ];
+  }
+
+  const modelAnswer = generateModelAnswer();
+
+  return {
+    score,
+    comment,
+    intent: '面试官提出此问题，核心考察候选人的项目深度、问题解决能力、技术决策思维以及在团队中的角色定位。同时也在观察候选人的表达逻辑、总结归纳能力以及是否具备复盘意识。',
+    strengths,
+    weaknesses,
+    suggestions,
+    modelAnswer
+  };
+}
+
+function generateModelAnswer() {
+  // Detect question type from the question text
+  const q = STATE.currentQuestion || '';
+
+  if (/项目|挑战|难点|架构|技术.*选|系统.*设计|高并发/i.test(q)) {
+    return '【优秀回答示范】\n\n📌 情境（Situation）：\n在我负责的支付系统架构升级项目中，原有单体架构日均处理 50 万笔交易，但业务增速要求半年内支撑 200 万笔/天，高峰期 P99 延迟已超过 3 秒，严重影响用户体验和业务转化。\n\n📌 任务（Task）：\n我作为技术负责人，需要在 3 个月内将系统容量提升 5 倍，P99 延迟控制在 300ms 以内，同时保证上线过程零故障——因为支付是核心链路，任何事故都会造成直接经济损失。\n\n📌 行动（Action）：\n1. 全链路压测 + 火焰图分析，定位到数据库锁竞争（占 60% 耗时）和缓存穿透（占 25%）为核心瓶颈\n2. 数据库层：引入分库分表中间件，按商户 ID 哈希拆分为 4 个分片，读写分离\n3. 缓存层：设计 Caffeine 本地缓存 + Redis 分布式缓存两级架构，配合布隆过滤器防穿透\n4. 异步化：将同步库存扣减改为 MQ 异步削峰，在最终一致性和业务可接受范围内做权衡\n5. 上线策略：灰度 10% → 50% → 100%，每阶段观察 24 小时，保留一键回滚能力\n\n📌 结果（Result）：\n系统容量提升 6 倍（实测支撑 320 万笔/天），P99 延迟降至 180ms。项目提前 2 周完成，3 阶段灰度全程零故障。该方案被 CTO 推广至公司全部交易类系统。\n\n💡 核心复盘：\n技术决策必须基于数据而非直觉。项目中期的压测数据让我们放弃了最初的全量缓存方案（命中率仅 40%），转而设计两级缓存，避免了后期大规模返工。另外，灰度方案的设计和执行是上线信心的关键——"能回滚"比"不出错"更重要。';
+
+  } else if (/分歧|冲突|团队|协作|沟通|说服|推动/i.test(q)) {
+    return '【优秀回答示范】\n\n📌 情境（Situation）：\n我们团队需要在一个季度内完成新推荐系统的上线，但这个项目需要协调算法、工程、数据平台和产品四个团队的资源。每个团队当时的 OKR 优先级完全不同——算法团队在冲刺模型精度、工程团队在还技术债、数据平台在迁移存储引擎、产品团队在盯另一个紧急需求。\n\n📌 任务（Task）：\n如何在不对齐的优先级中推动跨团队协作，确保项目按期交付。\n\n📌 行动（Action）：\n1. 组织了一次跨团队对齐会，邀请了各团队 TL 和核心执行同学，用数据说清楚了这个项目对各团队的价值（工程团队可以减少重复开发、数据团队有了标准化数据出口、产品团队能拿到实验数据）\n2. 把项目拆成 3 个 Phase，Phase 1 只做最核心链路（最小可行），降低各团队的投入门槛\n3. 建立 15 分钟/周的站会和 TAPD 共享看板，用可视化减少信息不对称\n4. 对于确实排不开的资源，采用"异步协作"——对方不需要全程参与，只在关键节点 Review\n5. 每周写一份简短的进度周报同步给各团队 Leader，算是对他们的"向上汇报素材"\n\n📌 结果（Result）：\n项目提前 5 天交付，上线后 CTR 提升 15%。更重要的是，这套跨团队协作机制被 3 个后续项目复用，跨团队摩擦成本显著降低。\n\n💡 核心复盘：\n跨团队协作的本质不是"协调资源"，而是"对齐价值"。当每个团队理解这件事对他们的意义，主动配合就会替代被动等待。另外，"最小可行拆解"很重要——把项目拆到足够小，让每个团队觉得"这点工作量不算什么"，是获得初始配合的关键。';
+
+  } else if (/失败|教训|错误|遗憾|重新|反思|改善/i.test(q)) {
+    return '【优秀回答示范】\n\n📌 情境（Situation）：\n我在一次大促前的性能优化中，凭经验判断瓶颈在数据库查询层，于是花了 2 周时间优化了大量慢 SQL 和索引。上线后发现 P99 延迟并没有明显改善。\n\n📌 问题诊断：\n后来做了全链路压测才发现，真正的瓶颈其实在 Redis 的热 Key 问题上——大促期间的某个商品详情页造成了缓存热点，单台 Redis 实例 CPU 被打满。我优化 SQL 的方向并没有错，但它不是当时的主要矛盾。\n\n📌 教训：\n1. "优化前先测量"——我应该先做 profiling 定位瓶颈，而不是凭经验直接动手\n2. "相信数据而非直觉"——我的直觉是基于历史经验的，但系统状态是动态变化的\n3. "优化要找对杠杆点"——花 2 周优化了贡献 10% 的问题，不如花 2 天解决贡献 60% 的问题\n\n📌 后续改进：\n从那以后，我建立了一套固定的性能优化流程：全链路压测 → 火焰图分析 → 瓶颈排序（Pareto 分析）→ 优先解决 Top 3 → 重新测量验证。这个流程后来成了团队的标准化 SOP，再没有出现过"优化错方向"的问题。\n\n💡 核心复盘：\n这个教训对我影响很深。它让我从一个"经验驱动"的工程师变成了"数据驱动"的工程师。现在我每做一个技术决策之前，第一反应是"数据怎么说？"而不是"我觉得应该这样做"。';
+
+  } else if (/创新|改进|优化|推动|主动|owner/i.test(q)) {
+    return '【优秀回答示范】\n\n📌 情境（Situation）：\n我发现团队的前端构建时间越来越长——一个中等规模的项目 CI 构建需要 18 分钟，严重影响开发效率和迭代速度。每次提交代码后要等近 20 分钟才能看到结果，开发者频繁切换上下文，碎片化时间浪费严重。\n\n📌 任务（Task）：\n我主动提出优化 CI 构建速度，目标是降到 5 分钟以内。\n\n📌 行动（Action）：\n1. 分析了构建日志，发现 70% 的时间花在 node_modules 的重复安装和 webpack 打包上\n2. 引入了 pnpm + 依赖缓存策略，利用 CI 的 cache 机制，将重复依赖安装的耗时从 8 分钟降到 30 秒\n3. 将 webpack 换成 esbuild，打包时间从 7 分钟降到 45 秒\n4. 将测试拆分为单元测试（快速）和集成测试（完整），前者在每次 commit 跑，后者在 PR 合并前跑\n5. 写了文档并在团队内做了分享，推动所有项目接入\n\n📌 结果（Result）：\nCI 构建时间从 18 分钟降到 3 分 20 秒。按团队 12 人、每人每天 5 次提交计算，每天为团队节省约 14 小时的等待时间。这套方案随后被推广到了整个前端部门 8 个项目。\n\n💡 核心复盘：\n这件事让我学会了两件事：第一，作为工程师不能只关注业务代码，工程效率同样重要——提升团队效率的价值远超个人产出。第二，推动改变需要先"做出成果再说话"——我先在自己的项目中验证了方案，用数据说服别人，而不是开会讨论"我们是不是应该优化一下构建"。';
+
+  } else if (/职业.*规划|目标|90.*天|未来/i.test(q)) {
+    return '【优秀回答示范】\n\n📌 短期目标（前 30 天）：\n我的首要任务是理解业务和融入团队。具体行动：\n1. 与团队每位成员和主要合作方做 1-on-1，了解现有系统的架构、痛点和技术债\n2. 熟悉核心业务流程和代码库，至少完成 2-3 个中小型需求的开发，建立对系统的感性认知\n3. 了解团队的工作方式和协作节奏，建立信任关系\n\n📌 中期目标（30-90 天）：\n开始独立承担模块，并带来可见的贡献。具体行动：\n1. 全面负责一个模块或子系统，从需求评审到上线的完整闭环\n2. 基于自己对系统的理解，提出 1-2 个技术改进建议（性能优化、开发体验、代码质量等）\n3. 参与技术评审和 Code Review，输出自己的技术观点\n\n📌 长期目标（6-12 个月）：\n成为团队中独当一面的核心成员。具体方向：\n1. 在某个技术领域（如性能优化、稳定性、工程效率）形成自己的专长\n2. 主导一个跨季度的大型技术项目\n3. 开始 Mentor 新人，将自己对业务和系统的理解输出给更多人\n\n💡 核心思路：\n前三个月不追求"惊天动地"，追求"建立信任"——让团队觉得你靠谱、有产出、好合作，自然会有更大的项目交给你。';
+
+  } else {
+    // Generic high-quality answer
+    return '【优秀回答示范】\n\n📌 背景（Situation）：\n在我之前的项目中，我们面临的核心挑战是________（简要描述业务或技术背景）。这个问题的复杂度在于涉及了________多个维度，任何一个环节出错都会影响整体结果。\n\n📌 任务（Task）：\n我作为________角色，核心任务是在________时间内，达成________目标。关键衡量指标是________。\n\n📌 行动（Action）：\n1. 第一步：充分调研——做了________，收集了________数据，明确了问题的本质\n2. 第二步：制定方案——设计了________，核心决策逻辑是________，也考虑了 Plan B\n3. 第三步：推动落地——协调了________资源，解决了________困难，保证了________质量\n4. 第四步：持续跟进——通过________方式跟踪效果，及时调整策略\n\n📌 结果（Result）：\n最终________（用具体数据），________指标提升了________%。项目交付后，________（产生了什么更长远的影响）。\n\n💡 核心复盘：\n这个经历让我最有价值的收获是________。如果用一句话总结，那就是：________。';
+  }
+}
+
+// ===== Feedback =====
+function sendFeedback(type) {
+  document.getElementById('btn-feedback-up').disabled = true;
+  document.getElementById('btn-feedback-down').disabled = true;
+  document.getElementById('feedback-thanks').style.display = 'block';
+  track('report_feedback', { type, question: STATE.currentQuestion });
+}
+
+// ===== History Panel =====
+function toggleHistory() {
+  const panel = document.getElementById('history-panel');
+  const overlay = document.getElementById('history-overlay');
+  const isOpen = panel.classList.contains('open');
+
+  if (isOpen) {
+    panel.classList.remove('open');
+    overlay.classList.remove('open');
+  } else {
+    renderHistory();
+    panel.classList.add('open');
+    overlay.classList.add('open');
+  }
+}
+
+function updateHistoryBadge() {
+  const history = getHistory();
+  const badge = document.getElementById('history-badge');
+  if (history.length > 0) {
+    badge.style.display = 'flex';
+    badge.textContent = history.length > 99 ? '99+' : history.length;
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function renderHistory() {
+  const history = getHistory();
+  const list = document.getElementById('history-list');
+
+  if (history.length === 0) {
+    list.innerHTML = '<div class="history-empty">&#x1F4AD; 暂无面试记录<br><span style="font-size:0.8rem;">完成一次面试后会自动保存</span></div>';
+    return;
+  }
+
+  list.innerHTML = history.map((h, i) => {
+    const date = new Date(h.timestamp);
+    const dateStr = date.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const score = h.report ? h.report.score : '?';
+    return `
+      <div class="history-item" onclick="viewHistoryItem('${h.id}')">
+        <div class="meta">
+          <span class="company">${escapeHtml(h.company)} · ${escapeHtml(h.position)}</span>
+          <span class="date">${dateStr}</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-size:0.8rem;color:var(--gray-500);">${escapeHtml(h.question.substring(0, 30))}...</span>
+          <span style="font-weight:700;color:var(--primary);font-size:0.9rem;">${score}分</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function viewHistoryItem(id) {
+  const history = getHistory();
+  const item = history.find(h => h.id === id);
+  if (!item) return;
+
+  STATE.company = item.company;
+  STATE.position = item.position;
+  STATE.requirements = item.requirements || '';
+  STATE.resume = item.resume || '';
+  STATE.currentQuestion = item.question;
+  STATE.answerText = item.answer;
+  STATE.currentReport = item.report;
+  STATE.mode = item.mode;
+
+  toggleHistory();
+  renderReport();
+  goToScreen('report');
+}
+
+// ===== Utility =====
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', () => {
+  updateHistoryBadge();
+  setupInputScreen();
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const panel = document.getElementById('history-panel');
+      if (panel.classList.contains('open')) toggleHistory();
+    }
+    // Ctrl+Enter to submit
+    if (e.ctrlKey && e.key === 'Enter') {
+      if (STATE.screen === 'input') generateQuestion();
+      if (STATE.screen === 'question' && STATE.answerText.trim()) submitAnswer();
+    }
+  });
+
+  console.log('%cAI Mock Interview MVP %cv1.0',
+    'font-weight:bold;color:#6366F1;', 'color:#6B7280;');
+  console.log('%cUser ID: %c' + getUserId(),
+    'color:#6B7280;', 'color:#374151;');
+  console.log('%cAll data stored in localStorage. Nothing leaves your browser.',
+    'color:#9CA3AF;font-style:italic;');
+});
+</script>
+
+<!-- Umami Analytics (self-hosted) -->
+<script async defer
+  data-website-id="YOUR_UMAMI_WEBSITE_ID"
+  src="https://YOUR_UMAMI_DOMAIN/script.js">
+</script>
+
+</body>
+</html>
