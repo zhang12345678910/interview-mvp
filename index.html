@@ -1400,6 +1400,19 @@ function updateUsageDisplay() {
   }
 }
 
+function sendToWeb3Forms(email, source) {
+  fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      access_key: '68d50fe5-eb78-4416-9611-1b4c31185072',
+      email: email,
+      subject: 'Interview MVP - 新用户邮箱 (' + source + ')',
+      from_name: 'Interview MVP'
+    })
+  }).catch(function() {});
+}
+
 function submitEmail() {
   const email = document.getElementById('email-input').value.trim();
   if (!email || !email.includes('@')) {
@@ -1407,13 +1420,7 @@ function submitEmail() {
     return;
   }
 
-  // Store locally + track
-  const emails = JSON.parse(localStorage.getItem('mvp_emails') || '[]');
-  if (!emails.includes(email)) {
-    emails.push(email);
-    localStorage.setItem('mvp_emails', JSON.stringify(emails));
-  }
-
+  sendToWeb3Forms(email, '免费版');
   document.getElementById('email-thanks').style.display = 'block';
   document.getElementById('email-input').value = '';
   track('email_submitted', { email });
@@ -1437,12 +1444,7 @@ function submitProInterest() {
     return;
   }
 
-  const emails = JSON.parse(localStorage.getItem('mvp_pro_emails') || '[]');
-  if (!emails.includes(email)) {
-    emails.push(email);
-    localStorage.setItem('mvp_pro_emails', JSON.stringify(emails));
-  }
-
+  sendToWeb3Forms(email, 'Pro版意向');
   document.getElementById('pro-overlay').classList.remove('show');
   showToast('已登记！Pro 版上线后会第一时间通知你');
   track('pro_interest_submitted', { email });
